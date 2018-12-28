@@ -24,5 +24,5 @@ public interface CityService {
      * @param searchContent
      * @return
      */
-    List<City> searchCity(Integer pageNumber, Integer pageSize, String searchContent);
+    City searchCity(Integer pageNumber, Integer pageSize, String searchContent);
 }

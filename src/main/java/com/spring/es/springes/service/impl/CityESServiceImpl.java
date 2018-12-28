@@ -17,6 +17,7 @@ import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 城市 ES 业务逻辑实现类
@@ -39,10 +40,12 @@ public class CityESServiceImpl implements CityService {
     }
 
     @Override
-    public List<City> searchCity(Integer pageNumber,
+    public City searchCity(Integer pageNumber,
                                  Integer pageSize,
                                  String searchContent) {
-        return null;
+        Optional<City> byId = cityRepository.findById(2L);
+        City city = byId.get();
+        return city;
     }
 
 }

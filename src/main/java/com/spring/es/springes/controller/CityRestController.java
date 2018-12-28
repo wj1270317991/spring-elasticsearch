@@ -31,9 +31,9 @@ public class CityRestController {
 
     @ApiOperation("查询城市")
     @RequestMapping(value = "/api/city/search", method = RequestMethod.GET)
-    public List<City> searchCity(@RequestParam(value = "pageNumber") Integer pageNumber,
+    public City searchCity(@RequestParam(value = "pageNumber",required = false) Integer pageNumber,
                                  @RequestParam(value = "pageSize", required = false) Integer pageSize,
-                                 @RequestParam(value = "searchContent") String searchContent) {
+                                 @RequestParam(value = "searchContent",required = false) String searchContent) {
         return cityService.searchCity(pageNumber,pageSize,searchContent);
     }
 }
