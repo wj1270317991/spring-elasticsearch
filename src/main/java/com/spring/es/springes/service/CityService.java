@@ -3,6 +3,7 @@ package com.spring.es.springes.service;
 
 
 import com.spring.es.springes.domain.City;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -18,11 +19,22 @@ public interface CityService {
 
     /**
      * 根据关键词，function score query 权重分分页查询
-     *
-     * @param pageNumber
-     * @param pageSize
-     * @param searchContent
+     */
+    List<City> searchAllCity();
+
+
+    /**
+     * 根据条件查询信息
+     * @param name
      * @return
      */
-    City searchCity(Integer pageNumber, Integer pageSize, String searchContent);
+    Page<City> searchByQuery(String name);
+
+
+    /**
+     * 复杂查询
+     * @param name
+     * @return
+     */
+    Page<City> searchComplexQuery(String name);
 }

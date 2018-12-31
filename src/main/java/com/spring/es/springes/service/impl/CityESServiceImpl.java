@@ -3,21 +3,21 @@ package com.spring.es.springes.service.impl;
 import com.spring.es.springes.domain.City;
 import com.spring.es.springes.repository.CityRepository;
 import com.spring.es.springes.service.CityService;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.functionscore.FunctionScoreQueryBuilder;
-import org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders;
+import org.elasticsearch.index.query.GeoBoundingBoxQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
-import org.springframework.data.elasticsearch.core.query.SearchQuery;
+import org.springframework.data.querydsl.QPageRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * 城市 ES 业务逻辑实现类
@@ -40,12 +40,26 @@ public class CityESServiceImpl implements CityService {
     }
 
     @Override
-    public City searchCity(Integer pageNumber,
-                                 Integer pageSize,
-                                 String searchContent) {
-        Optional<City> byId = cityRepository.findById(2L);
-        City city = byId.get();
-        return city;
+    public List<City> searchAllCity() {
+        List<City> cities = new ArrayList<>();
+        cityRepository.findAll().forEach(e -> cities.add(e));
+        return cities;
     }
 
+    @Override
+    public Page<City> searchByQuery(String name) {
+        Pageable of = PageRequest.of(2, 1);
+        List<City> cities = new ArrayList<>();
+        Page<City> byCityname = cityRepository.findByCityname(name, of);
+        return byCityname;
+    }
+
+
+    @Override
+    public Page<City> searchComplexQuery(String name) {
+
+//        NativeSearchQuery build = new NativeSearchQueryBuilder().withQuery().build();
+//        cityRepository.search()
+        return null;
+    }
 }
