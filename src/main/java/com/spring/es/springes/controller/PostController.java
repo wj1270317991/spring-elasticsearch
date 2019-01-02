@@ -4,6 +4,10 @@ import com.spring.es.springes.domain.City;
 import com.spring.es.springes.domain.Post;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.elasticsearch.search.sort.FieldSortBuilder;
+import org.elasticsearch.search.sort.SortBuilder;
+import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
@@ -39,5 +43,21 @@ public class PostController {
         SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(queryStringQuery(word)).withPageable(pageable).build();
         return elasticsearchTemplate.queryForList(searchQuery, Post.class);
     }
+
+    @ApiOperation("查询,排序")
+    @GetMapping("/sort")
+    public Object sort(String word, @PageableDefault Pageable pageable) {
+        //使用queryStringQuery完成单字符串查询
+
+        SearchQuery searchQuery = new NativeSearchQueryBuilder()
+                .withQuery(queryStringQuery(word))
+                .withSort(SortBuilders.fieldSort("userId").order(SortOrder.DESC))
+                .withSort(SortBuilders.fieldSort("weight").order(SortOrder.DESC))
+                .withPageable(pageable).build();
+        return elasticsearchTemplate.queryForList(searchQuery, Post.class);
+    }
+
+
+
 
 }
