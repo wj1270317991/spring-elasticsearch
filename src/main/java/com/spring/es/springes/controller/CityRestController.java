@@ -43,4 +43,11 @@ public class CityRestController {
         Page<City> cities = cityService.searchByQuery(name);
         return cities;
     }
+
+    @ApiOperation("复杂查询")
+    @GetMapping(value = "/api/complex/search")
+    public Page<City> complexSearch(@RequestParam String name){
+        Page<City> cities = cityService.searchComplexQuery(name);
+        return cities;
+    }
 }

@@ -3,8 +3,7 @@ package com.spring.es.springes.service.impl;
 import com.spring.es.springes.domain.City;
 import com.spring.es.springes.repository.CityRepository;
 import com.spring.es.springes.service.CityService;
-import org.elasticsearch.index.query.GeoBoundingBoxQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,11 +54,20 @@ public class CityESServiceImpl implements CityService {
     }
 
 
+    /**
+     * QueryBuilders.matchPhrasePrefixQuery 这是完全匹配的。
+     * ex: 北京  北 可以 京 可以 北京 可以  但是 北京人不可以
+     * @param name
+     * @return
+     */
     @Override
     public Page<City> searchComplexQuery(String name) {
-
-//        NativeSearchQuery build = new NativeSearchQueryBuilder().withQuery().build();
-//        cityRepository.search()
-        return null;
+        MatchPhrasePrefixQueryBuilder cityname = QueryBuilders.matchPhrasePrefixQuery("cityname", name);
+        NativeSearchQuery build = new NativeSearchQueryBuilder()
+                .withQuery(cityname)
+                .withIndices("cityindex")
+                .build();
+        Page<City> search = cityRepository.search(build);
+        return search;
     }
 }
