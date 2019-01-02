@@ -22,6 +22,8 @@ import java.util.List;
  * 城市 ES 业务逻辑实现类
  *
  * Created by bysocket on 07/02/2017.
+ *
+ * https://blog.csdn.net/tianyaleixiaowu/article/details/77965257
  */
 @Service
 public class CityESServiceImpl implements CityService {
@@ -62,7 +64,9 @@ public class CityESServiceImpl implements CityService {
      */
     @Override
     public Page<City> searchComplexQuery(String name) {
-        MatchPhrasePrefixQueryBuilder cityname = QueryBuilders.matchPhrasePrefixQuery("cityname", name);
+        MatchPhrasePrefixQueryBuilder cityname = QueryBuilders
+                .matchPhrasePrefixQuery("cityname", name);
+
         NativeSearchQuery build = new NativeSearchQueryBuilder()
                 .withQuery(cityname)
                 .withIndices("cityindex")
