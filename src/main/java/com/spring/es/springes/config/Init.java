@@ -2,7 +2,14 @@ package com.spring.es.springes.config;
 
 import com.spring.es.springes.domain.Post;
 import com.spring.es.springes.repository.PostRepository;
+import io.swagger.annotations.ApiOperation;
+import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.core.query.IndexQuery;
+import org.springframework.data.elasticsearch.core.query.IndexQueryBuilder;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -24,11 +31,15 @@ public class Init {
     @Autowired
     PostRepository postRepository;
 
+    @Autowired
+    private ElasticsearchTemplate elasticsearchTemplate;
+
     @PostConstruct
     public void init() {
         //只初始化一次
-        Iterable<Post> posts = postRepository.findAll();
-        if (posts.iterator().hasNext()) {
+
+        boolean projectname = elasticsearchTemplate.indexExists("projectname");
+        if (projectname) {
             return;
         }
         for (int i = 0; i < 40; i++) {
@@ -38,6 +49,8 @@ public class Init {
             post.setWeight(i);
             post.setUserId(i % 10);
             postRepository.save(post);
+//            IndexQuery query = new IndexQueryBuilder().withObject(post).build();
+//            String index = elasticsearchTemplate.index(query);
         }
     }
 
