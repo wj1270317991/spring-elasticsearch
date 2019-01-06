@@ -14,6 +14,7 @@ import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.query.*;
 import org.springframework.data.web.PageableDefault;
@@ -22,9 +23,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.elasticsearch.index.query.QueryBuilders.matchPhraseQuery;
-import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
-import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
+import static org.elasticsearch.index.query.MultiMatchQueryBuilder.Type.BEST_FIELDS;
+import static org.elasticsearch.index.query.Operator.AND;
+import static org.elasticsearch.index.query.QueryBuilders.*;
 
 /**
  * com.spring.es.springes.controller
@@ -117,6 +118,17 @@ public class PostController {
         return null;
     }
 
+
+
+    @ApiOperation("多字段匹配")
+    @GetMapping("/multiMatch")
+    public Object singleUserId(String title, @PageableDefault(sort = "weight", direction = Sort.Direction.DESC) Pageable pageable) {
+        SearchQuery searchQuery = new NativeSearchQueryBuilder()
+                //http://www.cnblogs.com/yjf512/p/4897294.html                                                          //默认为OR
+                .withQuery(multiMatchQuery(title, "title", "content").type(BEST_FIELDS).tieBreaker(0.3f).operator(AND))
+                .withPageable(pageable).build();
+        return elasticsearchTemplate.queryForList(searchQuery, Post.class);
+    }
 
 
 

@@ -1,11 +1,21 @@
 package com.spring.es.springes.controller;
 
 import com.spring.es.springes.domain.City;
+import com.spring.es.springes.domain.IntelligentStore;
 import com.spring.es.springes.service.CityService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.elasticsearch.common.geo.GeoDistance;
+import org.elasticsearch.common.unit.DistanceUnit;
+import org.elasticsearch.index.query.GeoDistanceQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.sort.GeoDistanceSortBuilder;
+import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
@@ -49,5 +59,27 @@ public class CityRestController {
     public Page<City> complexSearch(@RequestParam String name){
         Page<City> cities = cityService.searchComplexQuery(name);
         return cities;
+    }
+
+
+    @ApiOperation("距离查询")
+    @GetMapping(value = "geoSearch")
+    public Page<IntelligentStore> findAllByLocaltion(
+            double lat, double lon, double distance, Pageable pageable) {
+
+        GeoDistanceQueryBuilder builder =
+                QueryBuilders.geoDistanceQuery("location")//查询字段
+                        .point(lat, lon)//设置经纬度
+                        .distance(distance, DistanceUnit.METERS)//设置距离和单位（米）
+                        .geoDistance(GeoDistance.ARC);
+
+        GeoDistanceSortBuilder sortBuilder =
+                SortBuilders.geoDistanceSort("location",lat,lon)
+                        .point(lat, lon)
+                        .unit(DistanceUnit.METERS)
+                        .order(SortOrder.ASC);//排序方式
+
+        NativeSearchQueryBuilder nativeSearchQueryBuilder = new NativeSearchQueryBuilder().withQuery(builder).withSort(sortBuilder);
+        return null;
     }
 }
