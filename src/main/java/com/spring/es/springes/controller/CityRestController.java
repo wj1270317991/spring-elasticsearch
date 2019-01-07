@@ -6,8 +6,10 @@ import com.spring.es.springes.service.CityService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.elasticsearch.common.geo.GeoDistance;
+import org.elasticsearch.common.geo.GeoPoint;
 import org.elasticsearch.common.unit.DistanceUnit;
 import org.elasticsearch.index.query.GeoDistanceQueryBuilder;
+import org.elasticsearch.index.query.GeoPolygonQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.GeoDistanceSortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
@@ -19,6 +21,7 @@ import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilde
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -66,6 +69,13 @@ public class CityRestController {
     @GetMapping(value = "geoSearch")
     public Page<IntelligentStore> findAllByLocaltion(
             double lat, double lon, double distance, Pageable pageable) {
+        //多边形范围
+        List<GeoPoint> point1 = new ArrayList<>();
+        List<GeoPoint> point2 = new ArrayList<>();
+
+        GeoPolygonQueryBuilder polygonQueryBuilder =
+                QueryBuilders.geoPolygonQuery("location",point1);
+
 
         GeoDistanceQueryBuilder builder =
                 QueryBuilders.geoDistanceQuery("location")//查询字段
@@ -79,7 +89,10 @@ public class CityRestController {
                         .unit(DistanceUnit.METERS)
                         .order(SortOrder.ASC);//排序方式
 
-        NativeSearchQueryBuilder nativeSearchQueryBuilder = new NativeSearchQueryBuilder().withQuery(builder).withSort(sortBuilder);
+        NativeSearchQueryBuilder nativeSearchQueryBuilder = new NativeSearchQueryBuilder()
+                .withQuery(builder)
+                .withFilter(polygonQueryBuilder)
+                .withSort(sortBuilder);
         return null;
     }
 }
